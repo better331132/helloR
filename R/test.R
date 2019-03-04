@@ -165,3 +165,23 @@ ogrmpg
 
 #3
 midwest = as.data.frame(ggplot2::midwest)
+st = aggregate(data=midwest, total~state, sum)
+at = aggregate(data=midwest, asian~state, sum)
+tableapps = cbind(st,at[,2])
+colnames(tableapps)[3]='asian'
+tableapps
+#4
+colnames(midwest)[5]='total'
+colnames(midwest)[10]='asian'
+#5
+ta = sum(midwest$asian)
+midwest$asianpct = midwest$asian / ta
+hist(midwest$asianpct)
+#6
+apps = aggregate(data=midwest, asianpct~state, sum)
+barplot(apps$asianpct, names.arg=apps$state, main="주별 아시아인 인구분포")
+#7
+apavg = mean(midwest$asianpct)
+midwest$asianrate = ifelse(midwest$asianpct > apavg,'lg','sm')
+#8
+qplot(midwest$asianrate)
