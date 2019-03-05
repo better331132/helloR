@@ -185,3 +185,176 @@ apavg = mean(midwest$asianpct)
 midwest$asianrate = ifelse(midwest$asianpct > apavg,'lg','sm')
 #8
 qplot(midwest$asianrate)
+
+# rep ####
+rep(1, times=3)
+rep(LETTERS[1:5], times=4)
+rep(LETTERS[1:5], each=4)
+rep(c('I', 'am'), times=2, length.out=7)
+# seq ####
+-3:5
+5.5:-4.5
+seq(1,10,by=2)
+seq(5.4, -4.5)
+seq(5.4, -4.5, length.out=10)
+seq(from=1, to=88, by=3)
+#runif ####
+runif(20)
+t=runif(n=30, min=10, max=20)
+t
+#sample ####
+plot(t[order(t)])
+sample(1:5, size=3)
+set.seed(100);sample(1:5,size=3)
+sample(1:50, size=30, replace=F)
+data[sample(1:nrow(data), size=5,replace = F),]
+data$c1 = sample(c('AA','BB'), size=nrow(data), replace=T)
+cat(nrow(data),nrow(data[data$c1 == 'AA',]))
+data$c1 = sample(c('AA','BB'), size=nrow(data), replace=T, prob=c(0.5,0.5))
+data
+cat(nrow(data),nrow(data[data$c1 == 'AA',]))
+#set.seed ####
+set.seed(255); sample(1:100,10)
+smdt = data.frame(stuno=1:30,
+                   Korean=sample(10:50,30)+sample(10:50,30),
+                   English=sample(10:50,30)+sample(10:50,30),
+                   Math=sample(10:50,30)+sample(10:50,30))
+
+library(psych)
+describe(smdt2)
+#문자열 함수 ####
+s = "abc,efg,abc"
+nchar(s)
+substr(s, 1, 5)
+strsplit(s, ',')
+sub('abc', 'ttt', s)
+gsub('abc', 'ttt', s)
+cat(s)
+print(s)
+paste('aaa-bbb', 'ccc-ddd', sep='**')
+paste0('aaa-bbb', 'ccc-ddd')
+outer(month.abb, 2011:2020, paste, sep='-')
+outer(LETTERS, 2010:2020, paste0)
+grep(pattern='^3', x=data$학번, value = T) #value= T(값을 출력, F: 행)
+grep(pattern='^2.*0$', x=data$학번, value = T)# 2로시작, 중간에 아무거나, 끝에 0
+s="aBc,efg,abc"
+gsub(pattern='[,]+a(.*)',replacement = 'ttt', x=s, ignore.case=T)
+grep(pattern='[,]+a(.*)', x=s,value=T)
+
+# 시간함수 ####
+as.Date('2019-03-04 09:00')
+dt1 = as.POSIXct('2019-03-04 09:00')
+seq(dt1, as.POSIXct('2019-04-01'),by='day')
+seq(dt1, as.POSIXct('2019-04-01'), by='2 hour')
+seq(dt1, as.POSIXct('2019-04-01 23:59'), by='min')
+#install.packages('lubridate')
+#library(lubridate)
+ymd('20190305')
+mdy('03052019')
+year(dt1)
+day(dt1)=15
+dt1
+days_in_month(1:12)
+ddays(10)
+dhours(50)
+duration(1000)
+round(as.POSIXct('2019-03-05 18:39:45'), 'month')#min, hour, day, month, year단위까지 반올림 가능
+#if ####
+
+#switch ####
+switch(2, "111","222","333")
+switch(1, c("111","222","333"))
+
+#loop ####
+#for loop
+for(i in 1:3){print(i)}
+for(r in 1:nrow(data)){print(data[r,'scout'])}
+#while loop
+i=0
+while(i<10){print(i); i= i+1}
+#break & next(continue)
+i=0
+while(TRUE){
+  i = i + 1
+  if (i %% 2)
+    next
+  if ( i > 10 )
+    print(i)
+    break
+}
+source('factorial.R')
+# '<-' vs '<<-' ####
+
+#apply ####
+apply(smdt3[, 2:4], MARGIN = 1, FUN = mean)
+apply(smdt3[, 2:4], MARGIN = 2, FUN = mean)
+apply(smdt3[, 2:4], MARGIN = 2, FUN = quantile)
+#lappy ####
+lapply(smdt3[, 2:4], FUN = mean)
+unlist(lapply(smdt3[, 2:4], FUN = mean))
+#sapply####
+sapply(smdt3[, 2:4], FUN = mean, simplify = T)
+sapply(smdt3[, 2:4], FUN = mean, simplify = F)
+#vapply####
+vapply(smdt3[, 2:4], FUN = mean, FUN.VALUE = 1)#FUN.VALUE는 데이터의 타입만 고려함 1이든 10이든 결과에 영향이 없음
+#reshape2 - melt, dcast ####
+library('reshape2')
+dfsum=cbind(data.frame(no=1:4, year=2016:2019),matrix(round(runif(16),3) *1000, ncol=4,dimnames = list(NULL, paste0('Q', 1:4))))
+dfsum
+# melt(data, id.vars=<기준컬럼>, variable.name=<키 변수 명>)
+# `기준컬럼 - Key - Value` 형태로 구조 변경!!
+melt(data=dfsum[,2:6], id.vars = "year")
+meltsum = melt(dfsum[,2:6], id.vars = "year", variable.name = 'Sales')
+meltsum
+# dcast(data, <기준컬럼>~<나열컬럼>, value.var=<키 변수 명>)
+dcast(meltsum, Sales~year, value.var="value")
+#array ####
+dataArray = array(1:24, dim=c(3, 4, 2))    # (3X4 matrix) * 2
+dataArray
+#TryThis -if,loop,while,source,<-vs<<-, apply, reshape2(melt,dcast)####
+#1 data$group 컬럼에 A조~C조 랜덤으로 160명씩 고르게 분포시키시오.
+data$group = 'A조'
+data[data$group=='A조',][sample(1:320,size=320),]$group = 'B조'
+data[data$group=='B조',][sample(1:160,size=160),]$group = 'C조'
+cat(nrow(data[data$group=='A조',]))
+cat(nrow(data[data$group=='B조',]))
+cat(nrow(data[data$group=='C조',]))
+
+#2 fibonacci.R 파일을 작성하고 console에서 실행하시오.
+while(TRUE) {
+  x = as.integer(readline(prompt = "Input the number: "))
+  if (x <= 0) break
+  
+  if (x == 1) 
+    print("1")
+  else if (x == 2) 
+    print("1, 1")
+  else{
+    output = "1, 1"
+    b1 <- 1
+    b2 <- 1
+    for (i in 3:x){
+      b3 <- b1+b2
+      output <- paste(output,b3,sep=", ")
+      b1 <- b2
+      b2 <- b3
+    }
+    print(output)
+  }
+}
+source('fibonacci.R')
+
+#3 apply를 이용하여 smdt에 과목별 (총)평균점수 행을 추가하고, 총점과 평균 변수(컬럼)을 추가하시오.
+smdt[nrow(smdt)+1,2:4] = apply(smdt[,2:4], MARGIN = 2, FUN = mean)
+smdt[nrow(smdt),1]="계"
+smdt$total = apply(smdt[,2:4],MARGIN = 1, FUN = sum)
+smdt$avg = apply(smdt[,2:4],MARGIN = 1, FUN = mean)
+smdt
+
+#4 2016~2019년 연도별 1월(Jan) ~ 12월(Dec) 매출액 데이터를 `no year Jan Feb … Dec` 형태로 만든 다음, 아래와 같이 출력하시오.
+library('reshape2')
+smdt2 = cbind(data.frame(no=1:4, year=2016:2019), matrix(round(runif(48),2)*100, ncol=12, dimnames = list(NULL, month.abb)))
+smdt2
+melt(data=smdt2[,2:14], id.vars = "year")
+fmelt = melt(data=smdt2[,2:14], id.vars = "year", variable.name="Sales")
+fmelt

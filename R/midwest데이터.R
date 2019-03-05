@@ -14,7 +14,6 @@ colnames(tableapps)[3]='asian'
 tableapps
 hist(tableapps$asian)
 
-
 #4
 colnames(midwest)[5]='total'
 colnames(midwest)[10]='asian'
