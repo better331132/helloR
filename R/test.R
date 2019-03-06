@@ -84,6 +84,7 @@ mtx
 str(mtx)
 dim(mtx)
 View(mtx)
+
 #데이터탐색 ####
 #install.packages('psych')
 #library('psych')
@@ -216,9 +217,9 @@ cat(nrow(data),nrow(data[data$c1 == 'AA',]))
 #set.seed ####
 set.seed(255); sample(1:100,10)
 smdt = data.frame(stuno=1:30,
-                   Korean=sample(10:50,30)+sample(10:50,30),
-                   English=sample(10:50,30)+sample(10:50,30),
-                   Math=sample(10:50,30)+sample(10:50,30))
+                  Korean=sample(10:50,30)+sample(10:50,30),
+                  English=sample(10:50,30)+sample(10:50,30),
+                  Math=sample(10:50,30)+sample(10:50,30))
 
 library(psych)
 describe(smdt2)
@@ -269,9 +270,11 @@ switch(1, c("111","222","333"))
 #for loop
 for(i in 1:3){print(i)}
 for(r in 1:nrow(data)){print(data[r,'scout'])}
+
 #while loop
 i=0
 while(i<10){print(i); i= i+1}
+
 #break & next(continue)
 i=0
 while(TRUE){
@@ -280,9 +283,10 @@ while(TRUE){
     next
   if ( i > 10 )
     print(i)
-    break
+  break
 }
 source('factorial.R')
+
 # '<-' vs '<<-' ####
 
 #apply ####
@@ -297,28 +301,35 @@ sapply(smdt3[, 2:4], FUN = mean, simplify = T)
 sapply(smdt3[, 2:4], FUN = mean, simplify = F)
 #vapply####
 vapply(smdt3[, 2:4], FUN = mean, FUN.VALUE = 1)#FUN.VALUE는 데이터의 타입만 고려함 1이든 10이든 결과에 영향이 없음
+
 #reshape2 - melt, dcast ####
 library('reshape2')
 dfsum=cbind(data.frame(no=1:4, year=2016:2019),matrix(round(runif(16),3) *1000, ncol=4,dimnames = list(NULL, paste0('Q', 1:4))))
 dfsum
+
 # melt(data, id.vars=<기준컬럼>, variable.name=<키 변수 명>)
 # `기준컬럼 - Key - Value` 형태로 구조 변경!!
 melt(data=dfsum[,2:6], id.vars = "year")
 meltsum = melt(dfsum[,2:6], id.vars = "year", variable.name = 'Sales')
 meltsum
+
 # dcast(data, <기준컬럼>~<나열컬럼>, value.var=<키 변수 명>)
 dcast(meltsum, Sales~year, value.var="value")
+
 #array ####
 dataArray = array(1:24, dim=c(3, 4, 2))    # (3X4 matrix) * 2
 dataArray
+
 #TryThis -if,loop,while,source,<-vs<<-, apply, reshape2(melt,dcast)####
 #1 data$group 컬럼에 A조~C조 랜덤으로 160명씩 고르게 분포시키시오.
 data$group = 'A조'
-data[data$group=='A조',][sample(1:320,size=320),]$group = 'B조'
-data[data$group=='B조',][sample(1:160,size=160),]$group = 'C조'
+data[data$group=='A조',][sample(1:480,size=320),]$group = 'B조'
+data[data$group=='B조',][sample(1:320,size=160),]$group = 'C조'
 cat(nrow(data[data$group=='A조',]))
 cat(nrow(data[data$group=='B조',]))
 cat(nrow(data[data$group=='C조',]))
+data = data[order(data$학번),]
+data
 
 #2 fibonacci.R 파일을 작성하고 console에서 실행하시오.
 while(TRUE) {
