@@ -12,11 +12,12 @@ while(TRUE) {
     b2 <- 1
     for (i in 3:x){
       b3 <- b1+b2
+      rate <- b2/b1
       output <- paste(output,b3,sep=", ")
       b1 <- b2
       b2 <- b3
     }
     print(output)
+    print(b2/b1)
   }
-    
 }

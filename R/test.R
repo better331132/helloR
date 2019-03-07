@@ -322,13 +322,13 @@ dataArray
 
 #TryThis -if,loop,while,source,<-vs<<-, apply, reshape2(melt,dcast)####
 #1 data$group 컬럼에 A조~C조 랜덤으로 160명씩 고르게 분포시키시오.
-data$group = 'A조'
-data[data$group=='A조',][sample(1:480,size=320),]$group = 'B조'
-data[data$group=='B조',][sample(1:320,size=160),]$group = 'C조'
-cat(nrow(data[data$group=='A조',]))
-cat(nrow(data[data$group=='B조',]))
-cat(nrow(data[data$group=='C조',]))
-data = data[order(data$학번),]
+data$group = 'A'
+data[data$group=='A',][sample(1:480,size=320),]$group = 'B'
+data[data$group=='B',][sample(1:320,size=160),]$group = 'C'
+cat(nrow(data[data$group=='A',]))
+cat(nrow(data[data$group=='B',]))
+cat(nrow(data[data$group=='C',]))
+data = data[order(data$stuno),]
 data
 
 #2 fibonacci.R 파일을 작성하고 console에서 실행하시오.
@@ -367,5 +367,71 @@ library('reshape2')
 smdt2 = cbind(data.frame(no=1:4, year=2016:2019), matrix(round(runif(48),2)*100, ncol=12, dimnames = list(NULL, month.abb)))
 smdt2
 melt(data=smdt2[,2:14], id.vars = "year")
-fmelt = melt(data=smdt2[,2:14], id.vars = "year", variable.name="Sales")
+fmelt = melt(data=smdt2[,2:14], id.vars = "year", variable.name="Month", value.name = "SalesMT")
+
 fmelt
+
+#order, sort ####
+# order(data1, data2, …, decreasing=T)       # returns row.index
+t = c(5, 7, 2, 8, 20, 11, 19)
+t[order(t)]        # cf. t[order(t, decreasing = T)]
+
+# 평균점수는 낮으나 국어성적이 좋은 학생 (평균이 적은 순 && 국어성적이 좋은 순)
+smdt[order(smdt$avg, -smdt$Korean),]
+
+# cf. rev : sorting이 아니라 원소의 배열 순서를 뒤집는 것!
+rev(t[order(t)])
+
+# sort : 원소의 값으로만 정렬 ⇒ data.frame에서 사용 곤란!
+sort(t)
+sort(smdt$avg, decreasing=T)  # avg 값만 정렬되므로 전체 데이터는 출력 안됨!
+
+# missing value(결측처리) ####
+# 산술 연산 결측 처리
+t = c(1:5, NA, 7, NA, 9, 10)
+m1 = m2 = m3 = matrix(c(1:3, NA, 9:3, NA, 1:3), nrow=3)
+is.na(t)      # cf. is.infinite(t)
+table(is.na(t))
+t[is.na(t)]   # cf. mean(t[!is.na(t)])
+mean(t) # NA  
+mean(t, na.rm = T)
+
+# NA to 0
+t = ifelse(is.na(t), 0, t)
+m1[is.na(m1)] = 0        # 전체 변경
+m2[is.na(m2[,2]), 2]     # 2번째 컬럼에 대해서만 변경
+
+# array ####
+# 3차원 이상의 데이터 
+dataArray = array(1:24, dim=c(3, 4, 2))    # (3X4 matrix) * 2
+
+dim(dataArray)  # nrow(dataArray), ncol(dataArray), length(dataArray)
+
+dataArray[1,2,2] = 555
+dimnames(dataArray)
+dimnames(dataArray) = list( 1:3, c('c1', 'c2', 'c3', 'c4'), c('x','y'))
+
+# matrix 분리#
+ad1 = dataArray[,,1]
+
+# 차원 변경#
+attr(dataArray, "dim") = c(3,8)    # 2차원(3x8 matrix) 으로 변경
+
+attr(dataArray, "dim") = NULL      # 1차원 Vector로 변경
+
+# dplyr ####
+library('dplyr')
+
+# rename variable(컬럼-변수명 변경)
+rename(mpg, manu=manufacturer)  # dplyr::rename
+data = rename(data, stuno=학번, class=반, gender=성별, Korean=국어, English=영어, Math=수학, Science=과학, avg=평균, grade=학점, others=예체능)
+
+filter(mpg, manufacturer=='dodge', displ>5)
+# filter(행추출), select(열-변수 추출), mutate(변수추가)
+# arrange(정렬), group_by(집단별 나누기)
+# left_join, right_join, inner_join, semi_join, full_join, anti_join
+# bind_rows(행 합치기), bind_cols(열 합치기)
+
+# data %>% filter(변수명 == 값)
+library(dplyr)
+data = dplyr::rename(data, math=수학)
