@@ -213,9 +213,9 @@ ggplot( b, aes(x=displ)) +
   labs(title = '연도별 통합연비', subtitle = '굵은선 = 2008년')
 
 #2
-ttt = data%>%filter(kor>=80)
-ggplot(ttt, aes(cls)) +
-  geom_bar(aes(fill=gen),
+ttt = data%>%filter(korean>=80)
+ggplot(ttt, aes(class)) +
+  geom_bar(aes(fill=gender),
            width = 0.5) +
   theme(axis.text.x = element_text(angle=0,       # 글씨의 기울기
                                    vjust=0.6)) +   # 글씨의 하단 맞춤(띄우기)
@@ -233,7 +233,10 @@ ggplot(tttt, aes(korean)) +
        fill = "학급")
 
 #4 지역별 전체인구와 아시아계 인구의 관계
-midwest
-ggplot(ttttt, aes(poptotal,popasian)) +
-  geom_jitter()
 ttttt = midwest %>% filter(poptotal<=500000, popasian<=10000)
+ggplot(ttttt, aes(poptotal,popasian)) +
+  geom_jitter() +
+  labs(title="전체 인구와 아시아계 인구의 관계",
+       x="전체인구",
+       y="아시아계 인구")
+data

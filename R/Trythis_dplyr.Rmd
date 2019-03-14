@@ -1,0 +1,68 @@
+---
+title: "Trythis_dplyr"
+author: "better3311"
+date: "2019년 3월 14일"
+output: html_document
+---
+```{r include=TRUE}
+#1
+library(ggplot2)
+library(dplyr)
+
+midwest =as.data.frame(ggplot2::midwest)
+mpg = as.data.frame(ggplot2::mpg)
+load('data/data.rda')
+
+d1 = mpg %>%
+  filter(year == 1999) %>%
+  group_by(year,displ) %>%
+  summarise(m1 = mean(cty), m2 = mean(hwy))
+d2 = mpg %>%
+  filter(year == 2008) %>%
+  group_by(year, displ) %>%
+  summarise(m1 = mean(cty), m2 = mean(hwy))
+b = bind_cols(d1, d2)
+View(b)
+
+ggplot( b, aes(x=displ)) +
+  geom_line(aes(y=m1, color='1999 cty')) +
+  geom_line(aes(y=m2, color='1999 hwy')) +
+  geom_line(aes(y=m11, color='2008 cty'), size=1.3) +
+  geom_line(aes(y=m21, color='2008 hwy'), size=1.3) +
+  scale_colour_manual("", breaks = c("1999 cty", "1999 hwy","2008 cty", "2008 hwy"),
+                          values = c("red", "grey", "green", "purple")) +
+  xlab("배기량") +
+  xlim(1, 7) +
+  scale_y_continuous("연비", limits = c(5, 45)) +
+  labs(title = '연도별 통합연비', subtitle = '굵은선 = 2008년')
+
+#2
+ttt = data%>%filter(korean>=80)
+ggplot(ttt, aes(class)) +
+  geom_bar(aes(fill=gender),
+           width = 0.5) +
+  theme(axis.text.x = element_text(angle=0, 
+                                   vjust=0.6)) +
+  scale_fill_discrete(name = "성별") +
+  labs(title = '반별 상위 국어성적 성비',
+       x='학급',
+       y='국어성적95점이상 인원수')
+
+#3
+tttt = data %>% group_by(class) %>% filter(korean >= 95)
+ggplot(tttt, aes(korean)) +
+  geom_density(aes(fill=factor(class)), alpha=0.8) +
+  labs(title="밀도그래프", subtitle = "국어성적에 따른 학급별 밀도그래프",
+       caption="Source: ggplot2::mpg",
+       x = "성적",
+       y = "밀도",
+       fill = "학급")
+
+#4 
+ttttt = midwest %>% filter(poptotal<=500000, popasian<=10000)
+ggplot(ttttt, aes(poptotal,popasian)) +
+  geom_jitter() +
+  labs(title="전체 인구와 아시아계 인구의 관계",
+       x="전체인구",
+       y="아시아계 인구")
+```
