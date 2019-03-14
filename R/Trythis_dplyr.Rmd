@@ -5,7 +5,8 @@ date: "2019년 3월 14일"
 output: html_document
 ---
 ```{r include=TRUE}
-#1
+#1 mpg데이터에서 연도별 배기량에 따른 도시/고속도로연비를 꺽은선으로 그리시오.
+#(단, 2008년은 굵은 선으로 표현하시오)
 library(ggplot2)
 library(dplyr)
 
@@ -36,7 +37,8 @@ ggplot( b, aes(x=displ)) +
   scale_y_continuous("연비", limits = c(5, 45)) +
   labs(title = '연도별 통합연비', subtitle = '굵은선 = 2008년')
 
-#2
+#2 data(성적.csv) 데이터에서 국어 성적이 80점 이상인 학생들의 수를 성비가 보이도록 학급별로 막대그래프를 그리시오.
+
 ttt = data%>%filter(korean>=80)
 ggplot(ttt, aes(class)) +
   geom_bar(aes(fill=gender),
@@ -48,7 +50,7 @@ ggplot(ttt, aes(class)) +
        x='학급',
        y='국어성적95점이상 인원수')
 
-#3
+#3 국어 성적이 95점 이상인 학생들의 학급별 밀도그래프를 그리시오.
 tttt = data %>% group_by(class) %>% filter(korean >= 95)
 ggplot(tttt, aes(korean)) +
   geom_density(aes(fill=factor(class)), alpha=0.8) +
@@ -58,7 +60,9 @@ ggplot(tttt, aes(korean)) +
        y = "밀도",
        fill = "학급")
 
-#4 
+#4 midwest데이터에서 전체인구와 아시아계 인구의 관계를 알아보기 위한 그래프를 그리시오.
+#(단, 전체인구는 50만명 이하, 아시아계인구는 1만명 이하만 표시되게)
+
 ttttt = midwest %>% filter(poptotal<=500000, popasian<=10000)
 ggplot(ttttt, aes(poptotal,popasian)) +
   geom_jitter() +
