@@ -240,3 +240,101 @@ ggplot(ttttt, aes(poptotal,popasian)) +
        x="전체인구",
        y="아시아계 인구")
 data
+
+# 투시도 - persp() ####
+x = 1:5; y = 1:3
+z = outer(x, y, function(x,y) { x + y })   # dim(x) * dim(y)
+z
+# persp(x, y, z, theta=a, phi=a, col='..', expand=...)
+x = seq(-10, 10, length=30); y = x
+f = function(x, y) {
+r = sqrt(x^2 + y^2)
+return (10 * sin(r) / r)
+}
+z = outer(x, y, f)
+persp(x, y, z, theta = 0, phi = 0, expand = 0.5, col='lightblue',
+      ltheta = 120, shade = 0.75, ticktype='detailed',
+      xlab = 'X', ylab = 'Y', zlab = "Sinc(r)")
+
+# 단계구분도 (Choroleth Map)-전처리####
+head(USArrests)
+str(USArrests) 
+rownames(USArrests)
+# state 변수가 없이 rownames가 state!!
+library(tibble)    # install.packages('dplyr')
+chodata = rownames_to_column(USArrests, var = 'state')
+chodata$state = tolower(chodata$state)
+# other way
+chodata = data.frame(state = tolower(rownames(USArrests)), USArrests)
+head(chodata)
+
+# 단계구분도(Choroleth Map)-그리기####
+#ggiraphExtra::ggChoropleth()   #https://cran.r-project.org/web/packages/ggiraphExtra/index.html
+install.packages('ggiraphExtra')
+install.packages('maps')
+library(ggiraphExtra)
+usmap = map_data('state') 
+head(usmap)
+
+install.packages('mapproj')
+ggChoropleth(data=chodata,
+             aes(fill=Murder, map_id=state),
+             map = usmap,
+             title = '..',
+             reverse = F,
+             interactive = T)
+
+# customize tooltip & click ####
+tooltips = paste0(
+  sprintf("<p><strong>%s</strong></p>", as.character(chodata$state)),
+  '<table>',
+  '  <tr>',
+  '    <td>인구(ten thousand)</td>',
+  sprintf('<td>%.0f</td>', chodata$UrbanPop * 10),
+  '  </tr>',
+  '  <tr>',
+  '    <td>살인</td>',
+  sprintf('<td>%.0f</td>', chodata$Murder),
+  '  </tr>',
+  '  <tr>',
+  '    <td>pokryuk</td>',
+  sprintf('<td>%.0f</td>', chodata$Assault),
+  '  </tr>',
+  '</table>' )
+tooltips = stringi::stri_enc_toutf8(tooltips)
+
+onclick = sprintf("alert(\"%s\")", as.character(chodata$state))
+
+install.packages("ggiraph")
+#ggplot() + geom_map_interactive(tooltip=.., onclick=..) → ggiraph() → girafe()
+
+library(ggiraph)
+ggplot(chodata, aes(data = Murder, map_id = state)) +
+  geom_map_interactive( 
+    aes(fill = Murder,
+        data_id = state,
+        tooltip = tooltips,
+        onclick = onclick), 
+    map = usmap) +
+  expand_limits(x = usmap$long, y = usmap$lat) +
+  scale_fill_gradient2('살인', low='red', high = "blue", mid = "green") +
+  labs(title="USA Murder") -> gg_map
+ggiraph(code = print(gg_map))
+girafe(ggobj = gg_map)
+
+Sys.getlocale()
+
+# 우리나라 단계 구분도 -kormaps ####
+install.packages('devtools')
+devtools::install_github("cardiomoon/kormaps2014")
+library(kormaps2014)
+kdata = kormaps2014::changeCode(korpop1)
+kdata = kdata %>% rename(pop = 총인구_명)
+kdata = kdata %>% rename(area = 행정구역별_읍면동)
+kdata = changeCode(kdata)
+View(kdata)
+ggChoropleth(data=kdata, 
+             aes(fill = pop, map_id = code, tooltip = area),
+             map = kormap1,
+             interactive = T)
+kdata$area = stringi::stri_enc_toutf8(kdata$area)

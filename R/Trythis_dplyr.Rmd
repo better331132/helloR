@@ -4,7 +4,7 @@ author: "better3311"
 date: "2019년 3월 14일"
 output: html_document
 ---
-```{r include=TRUE}
+```{r include=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
 #1 mpg데이터에서 연도별 배기량에 따른 도시/고속도로연비를 꺽은선으로 그리시오.
 #(단, 2008년은 굵은 선으로 표현하시오)
 library(ggplot2)
