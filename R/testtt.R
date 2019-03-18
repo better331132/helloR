@@ -200,7 +200,7 @@ d2 = mpg %>%
 b = bind_cols(d1, d2)
 View(b)
 
-ggplot( b, aes(x=displ)) +
+k = ggplot( b, aes(x=displ)) +
   geom_line(aes(y=m1, color='1999 cty')) +
   geom_line(aes(y=m2, color='1999 hwy')) +
   geom_line(aes(y=m11, color='2008 cty'), size=1.3) +
@@ -214,7 +214,7 @@ ggplot( b, aes(x=displ)) +
 
 #2
 ttt = data%>%filter(korean>=80)
-ggplot(ttt, aes(class)) +
+bar = ggplot(ttt, aes(class)) +
   geom_bar(aes(fill=gender),
            width = 0.5) +
   theme(axis.text.x = element_text(angle=0,       # 글씨의 기울기
@@ -224,7 +224,7 @@ ggplot(ttt, aes(class)) +
 
 #3
 tttt = data %>% group_by(class) %>% filter(korean >= 95)
-ggplot(tttt, aes(korean)) +
+bar2 = ggplot(tttt, aes(korean)) +
   geom_density(aes(fill=factor(class)), alpha=0.8) +
   labs(title="밀도그래프", subtitle = "국어성적에 따른 학급별 밀도그래프",
        caption="Source: ggplot2::mpg",
@@ -234,7 +234,7 @@ ggplot(tttt, aes(korean)) +
 
 #4 지역별 전체인구와 아시아계 인구의 관계
 ttttt = midwest %>% filter(poptotal<=500000, popasian<=10000)
-ggplot(ttttt, aes(poptotal,popasian)) +
+bar3 = ggplot(ttttt, aes(poptotal,popasian)) +
   geom_jitter() +
   labs(title="전체 인구와 아시아계 인구의 관계",
        x="전체인구",
@@ -328,13 +328,118 @@ Sys.getlocale()
 install.packages('devtools')
 devtools::install_github("cardiomoon/kormaps2014")
 library(kormaps2014)
-kdata = kormaps2014::changeCode(korpop1)
+#kdata = kormaps2014::changeCode(korpop1)
 kdata = kdata %>% rename(pop = 총인구_명)
 kdata = kdata %>% rename(area = 행정구역별_읍면동)
-kdata = changeCode(kdata)
+kdata = korpop1
 View(kdata)
 ggChoropleth(data=kdata, 
              aes(fill = pop, map_id = code, tooltip = area),
              map = kormap1,
              interactive = T)
-kdata$area = stringi::stri_enc_toutf8(kdata$area)
+#kdata$area = stringi::stri_enc_toutf8(kdata$area)
+
+ggplot(kdata, aes(data = pop, map_id = code)) +
+  geom_map( aes(fill = pop), map = kormap1) + 
+  expand_limits(x = kormap1$long, y = kormap1$lat) +
+  scale_fill_gradient2('인구', low='darkblue') +
+  xlab('경도') + ylab('위도') + 
+  labs(title="시도별 인구")
+kdata
+
+# Interactive Graph - plotly
+install.packages('plotly')
+library(plotly)
+t=ggplot(data, aes(english, korean)) +
+  geom_point(aes(color=english, size=korean), alpha=0.3)
+colnames(data)
+ggplotly(t)
+ggplotly(bar)
+ggplotly(bar2)
+ggplotly(bar3)
+
+install.packages('dygraphs')
+library(dygraphs)
+library(xts)
+economics
+ue = xts(economics$unemploy, order.by = economics$date)
+dygraph(ue)
+dygraph(ue) %>% dyRangeSelector()
+
+psave = xts(economics$psavert, order.by = economics$date)
+ue2 = xts(economics$unemploy / 1000, order.by = economics$date)
+pu = cbind(ue2, psave)
+dygraph(pu) %>% dyRangeSelector()
+kormaps2014::tbc
+
+#Try This: choropleth ####
+#1 다음과 같이 미국의 범죄율을 한번에 작도하시오.
+
+USA = USArrests
+usmap = map_data('state')
+ggChoropleth(data=chodata, 
+             aes(fill = c(Murder, Assault,UrbanPop,Rape), map_id = state),
+             map = usmap,
+             interactive = T)
+
+#2미국 범죄율의 Rape부분을 단계 구분도로 작성하시오.(단, 툴팁은 그림과 같이 표현하고, 클릭시 해당 state의 wikipedia 페이지를 보이도록 HTML로 저장하시오)
+tooltip_r = paste0(
+  sprintf("<p><strong>%s</strong></p>", as.character(chodata$state)),
+  '<table>',
+  '  <tr>',
+  '    <td></td>',
+  sprintf('<td>%.0f</td>', chodata$Rape),
+  '    <td>/</td>',
+  sprintf('<td>%.0f</td>', chodata$UrbanPop * 10),
+  '    <td>만</td>',
+  '  </tr>',
+  '</table>' )
+tooltip_r = stringi::stri_enc_toutf8(tooltip_r)
+
+onclick = sprintf("window.open(\"https://en.wikipedia.org/wiki/%s\")", as.character(chodata$state))
+ggplot(chodata, aes(data = Rape, map_id = state)) +
+  geom_map_interactive( 
+    aes(fill = Rape,
+        data_id = state,
+        tooltip = tooltip_r,
+        onclick = onclick), 
+    map = usmap) +
+  expand_limits(x = usmap$long, y = usmap$lat) +
+  scale_fill_gradient2('Rape', low='red', high = "blue", mid = "green") +
+  labs(title="US Rape") -> gg_Rape
+ggiraph(code = print(gg_Rape))
+girafe(ggobj = gg_Rape)
+
+#3시도별 결핵환자수(kormaps::tbc)를 단계 구분도로 작성하시오.(우리나라) (단, 환자수는 2006년부터 2015년 총합, NA인 지역은 0으로 표시할 것)
+tbc = kormaps2014::tbc
+tbc = kormaps2014::changeCode(tbc)
+tbc$NewPts = ifelse(is.na(tbc$NewPts),0,tbc$NewPts)
+tbc$year = as.numeric(tbc$year)
+tbc$NewPts = as.numeric(tbc$NewPts)
+tbcpart = tbc %>% filter(year %in% 2006:2015) %>% group_by(code,name) %>% summarise(SNewPts = sum(NewPts))
+tooltip_t = paste0(
+  sprintf("<p>%s</p>", as.character(tbcpart$name)),
+  '<table>',
+  '  <tr>',
+  '    <td></td>',
+  sprintf('<td>%.0f명</td>', tbcpart$SNewPts),
+  '  </tr>',
+  '</table>' )
+tooltip_t = stringi::stri_enc_toutf8(tooltip_t)
+
+ggChoropleth(data=tbcpart, 
+             aes(fill = SNewPts, map_id = code, tooltip = name),
+             map = kormap1,
+             interactive = T)
+
+ggplot(tbcpart, aes(data = SNewPts, map_id = code)) +
+  geom_map_interactive( 
+    aes(fill = SNewPts,
+        data_id = code,
+        tooltip = tooltip_t), 
+    map = kormap1) +
+  expand_limits(x = kormap1$long, y = kormap1$lat) +
+  scale_fill_gradient2('Rape', low='red', high = "blue") +
+  labs(title="Korea tbc") -> korea_tbc
+ggiraph(code = print(korea_tbc))
+girafe(ggobj = korea_tbc)

@@ -1,0 +1,71 @@
+#Try This: choropleth ####
+#1 다음과 같이 미국의 범죄율을 한번에 작도하시오.
+
+usmap = map_data('state')
+ggChoropleth(data=chodata, 
+             aes(fill = c(Murder, Assault,UrbanPop,Rape), map_id = state),
+             map = usmap,
+             interactive = T)
+
+#2미국 범죄율의 Rape부분을 단계 구분도로 작성하시오.(단, 툴팁은 그림과 같이 표현하고, 클릭시 해당 state의 wikipedia 페이지를 보이도록 HTML로 저장하시오)
+tooltip_r = paste0(
+  sprintf("<p><strong>%s</strong></p>", as.character(chodata$state)),
+  '<table>',
+  '  <tr>',
+  '    <td></td>',
+  sprintf('<td>%.0f</td>', chodata$Rape),
+  '    <td>/</td>',
+  sprintf('<td>%.0f</td>', chodata$UrbanPop * 10),
+  '    <td>만</td>',
+  '  </tr>',
+  '</table>' )
+tooltip_r = stringi::stri_enc_toutf8(tooltip_r)
+
+onclick = sprintf("window.open(\"https://en.wikipedia.org/wiki/%s\")", as.character(chodata$state))
+ggplot(chodata, aes(data = Rape, map_id = state)) +
+  geom_map_interactive( 
+    aes(fill = Rape,
+        data_id = state,
+        tooltip = tooltip_r,
+        onclick = onclick), 
+    map = usmap) +
+  expand_limits(x = usmap$long, y = usmap$lat) +
+  scale_fill_gradient2('Rape', low='red', high = "blue", mid = "green") +
+  labs(title="US Rape") -> gg_Rape
+ggiraph(code = print(gg_Rape))
+girafe(ggobj = gg_Rape)
+
+#3시도별 결핵환자수(kormaps::tbc)를 단계 구분도로 작성하시오.(우리나라) (단, 환자수는 2006년부터 2015년 총합, NA인 지역은 0으로 표시할 것)
+tbc = kormaps2014::tbc
+tbc = kormaps2014::changeCode(tbc)
+tbc$NewPts = ifelse(is.na(tbc$NewPts),0,tbc$NewPts)
+tbc$year = as.numeric(tbc$year)
+tbc$NewPts = as.numeric(tbc$NewPts)
+tbcpart = tbc %>% filter(year %in% 2006:2015) %>% group_by(code,name) %>% summarise(SNewPts = sum(NewPts))
+tooltip_t = paste0(
+  sprintf("<p>%s</p>", as.character(tbcpart$name)),
+  '<table>',
+  '  <tr>',
+  '    <td></td>',
+  sprintf('<td>%.0f명</td>', tbcpart$SNewPts),
+  '  </tr>',
+  '</table>' )
+tooltip_t = stringi::stri_enc_toutf8(tooltip_t)
+
+tbcpart$name = stringi::stri_enc_toutf8(tbcpart$name)
+ggChoropleth(data=tbcpart, 
+             aes(fill = SNewPts, map_id = code, tooltip = name),
+             map = kormap1,
+             interactive = T)
+
+ggplot(tbcpart, aes(data = SNewPts, map_id = code)) +
+  geom_map_interactive( 
+    aes(fill = SNewPts,
+        data_id = code,
+        tooltip = tooltip_t), 
+    map = kormap1) +
+  expand_limits(x = kormap1$long, y = kormap1$lat) +
+  scale_fill_gradient2('Rape', low='red', high = "blue") +
+  labs(title="Korea tbc") -> korea_tbc
+ggiraph(code = print(korea_tbc))
+girafe(ggobj = korea_tbc)
