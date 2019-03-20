@@ -98,7 +98,6 @@ ggplot(economics, aes(x=date)) +
        subtitle="Uempmed Percentage from 'Economics' Dataset", 
        caption="Source: Economics", 
        y="uempmed %")
-economics
 ```
 #1-5 Marginal histogram
 ```{r warning=F, message=F}

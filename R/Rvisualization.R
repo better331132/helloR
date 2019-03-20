@@ -1,9 +1,12 @@
 # R에서의 시각화 패키지중 대표적인 그래프 함수(5개이상)에 대해 용도와 작도법을 자유롭게 서술하시오
 #1-1 산점도
 install.packages('ggalt')
-
+install.packages('dplyr')
+install.packages('ggplot2')
+install.packages('colorspace')
 devtools::install_github("hrbrmstr/ggalt")
 options(scipen = 999)
+library(dplyr)
 library(ggplot2)
 library(ggalt)
 midwest_select <- midwest[midwest$poptotal > 350000 & 

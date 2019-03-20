@@ -221,6 +221,7 @@ bar = ggplot(ttt, aes(class)) +
                                    vjust=0.6)) +   # 글씨의 하단 맞춤(띄우기)
   scale_fill_discrete(name = "성별") +      # legend
   labs(title = 'Title', subtitle = 'Sub Title')
+bar
 
 #3
 tttt = data %>% group_by(class) %>% filter(korean >= 95)
@@ -231,6 +232,7 @@ bar2 = ggplot(tttt, aes(korean)) +
        x = "성적",
        y = "밀도",
        fill = "학급")
+bar2
 
 #4 지역별 전체인구와 아시아계 인구의 관계
 ttttt = midwest %>% filter(poptotal<=500000, popasian<=10000)
