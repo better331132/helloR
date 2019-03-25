@@ -5,13 +5,8 @@ library(KoNLP)
 
 
 install.packages(c("twitteR", "RCurl", "RJSONIO", "stringr", "streamR", "ROAuth"))
-api_key = "rVIPG3JfNPj3pekNcyM1JjSDz"
-api_secret = "1OrjfJq6Qe3WAdCOUvdmXe4ILb6z45eYn5XdlUbfrwypWksppQ"
-token = "1108927737190768641-ZjkB0DcgSTt5tI3nIoIlITNCeOu2jD"
-token_secret = "IY15gghpjHeAkhhL2Ai6sMLB6xZMU4KOlb7lWIrBXbgvz"
-api_keys = c(api_key, api_secret, token, token_secret)
-setup_twitter_oauth(api_key, api_secret, token, token_secret)
-save(api_keys, file = "data/api_keys.rda")
+load("data/api_keys.rda")
+#save(api_keys, file = "data/api_keys.rda")
 
 
 library(twitteR); library(RCurl); library(RJSONIO); library(stringr);library(streamR); library(ROAuth)
