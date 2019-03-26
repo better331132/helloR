@@ -22,3 +22,12 @@ library(RJSONIO)
 library(stringr)
 library(streamR)
 library(ROAuth)
+
+#텍스트마이닝 연관성분석관련
+library(arules); library(igraph); library(combinat)
+
+#텍스트마이닝 연관성 시각화 
+library(arulesViz); library(visNetwork)
+
+# 네이버 스크레이핑
+library(rvest); library(httr); library(stringr); library(dplyr)

@@ -9,7 +9,7 @@ setup_twitter_oauth(api_keys[1], api_keys[2], api_keys[3], api_keys[4])
 
 
 
-tweets = searchTwitter(enc2utf8('심마담'), n=1000, lan='ko', since='2019-03-01', until='2019-03-31')
+tweets = searchTwitter(enc2utf8('심마담'), n=10000, lan='ko', since='2019-03-01', until='2019-03-31')
 tdf = twListToDF(tweets)
 
 # tdf %>% filter(!isRetweet) %>% filter(favoriteCount > 2) # 없네
@@ -46,3 +46,5 @@ extractNoun
 install.packages(c("rJava", "memoise", "KoNLP"))
 library(rJava)
 library(KoNLP)
+
+

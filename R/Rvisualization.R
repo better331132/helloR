@@ -115,3 +115,4 @@ g <- ggplot(mpg, aes(cty, hwy)) +
   geom_smooth(method="lm", se=F)
 
 ggMarginal(g, type = "histogram", fill="transparent")
+
