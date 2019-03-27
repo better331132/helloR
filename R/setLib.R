@@ -10,6 +10,8 @@ library(plotly)
 library(dygraphs)
 library(xts)
 library(kormaps2014)
+library(RColorBrewer)
+library(wordcloud)
 
 #텍스트마이닝 관련-KoNLP
 library(rJava)

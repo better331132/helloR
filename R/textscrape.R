@@ -53,8 +53,6 @@ install.packages(c("rJava", "memoise", "KoNLP"))
 library(rJava)
 library(KoNLP)
 
-
-
 # 텍스트마이닝 기법( 연관성 분석 ) ####
 install.packages(c("arules", "igraph", "combinat", "arulesViz", "visNetwork"))
 library(arules); library(igraph); library(combinat)

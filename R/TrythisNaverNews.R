@@ -1,4 +1,11 @@
 # Try THis : Naver News ####
+library(rvest)
+library(KoNLP)
+library(RColorBrewer)
+library(wordcloud)
+library(arulesViz)
+library(visNetwork)
+library(arules); library(igraph); library(combinat)
 #1 네이버 뉴스 1면의 기사들을 수집하시오.
 newsUrl = "https://news.naver.com/main/home.nhn"
 html = read_html(newsUrl)
@@ -37,12 +44,17 @@ bpstr = function(x){
   x = gsub('<.*>', ' ', enc2native(x))
   x = gsub("\\s{2,}", " ", x)
   x = gsub("[[:punct:]]", " ", x)
-  gsub("[[:digit:]]", " ", x)
+  x = gsub("[[:digit:]]", " ", x)
+  x = gsub("\\W"," ", x)
+  gsub("\\s{2,}", " ", x)
   
 }
 lastnum = length(naver_news)
 lastnum
+bpstr(naver_news[[3]][1])
+
 for (i in 1:lastnum){
+  if (is.null(naver_news[[i]][1])) next;
   naver_news[[i]][1] = bpstr(naver_news[[i]][1])
 }
 naver_news
@@ -57,13 +69,13 @@ nnnoun = sapply(naver_news, extractNoun, USE.NAMES = F)
 nnnoun = sapply(nnnoun, unique)
 nnnoun
 nnnoun2 = sapply(nnnoun, function(x) {
-  Filter(function(y='') { nchar(y) <= 4 && nchar(y) > 1 && is.hangul(y) }, x)
+  Filter(function(y='') { nchar(y) <= 7 && nchar(y) > 1 && is.hangul(y) }, x)
 })
 wtrans = as(nnnoun2, "transactions")
-rules = apriori(wtrans, parameter = list(supp=0.085, conf=0.85))
+rules = apriori(wtrans, parameter = list(supp=0.076, conf=0.76))
 inspect(sort(rules))
 
-subrules3 <- head(sort(rules, by="lift"), 100)
+subrules3 <- head(sort(rules, by="lift"), 400)
 ig3 <- plot( subrules3, method="graph", control=list(type="items") )
 ig_df3 <- get.data.frame( ig3, what = "both" )
 visNetwork(
