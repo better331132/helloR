@@ -3,35 +3,36 @@ library('psych')
 library('ggplot2')
 save(data, file = 'data/data.rda')
 load("data/data.rda")
+data
 save(mpg, file = 'data/mpg.rda')
 load("data/mpg.rda")
 rm(mpg)
 data
 #1-1
 #(1) 데이터준비
-mnmath = data %>% filter(class %in% c('죽', '매')) %>% select(class, math)
+mnmath = data %>% filter(cls %in% c('죽', '매')) %>% select(cls, math)
 mnmath;
-mnmath$class = factor(mnmath$class, levels=c('죽','매'), labels=c('죽', '매'))
-mnmath$class
-describeBy(mnmath$math, mnmath$class, mat = T)
+mnmath$cls = factor(mnmath$cls, levels=c('죽','매'), labels=c('죽', '매'))
+mnmath$cls
+describeBy(mnmath$math, mnmath$cls, mat = T)
 
 orgpar = par(no.readonly = T)
 #(2) 데이터 확인
 
-boxplot(mnmath$math ~ mnmath$class)
+boxplot(mnmath$math ~ mnmath$cls)
 layout(matrix(c(1,1,2,3), 2, 2, byrow = T))
-boxplot(mnmath$math ~ mnmath$class)
-hist(mnmath$math[mnmath$class == '죽'])
-hist(mnmath$math[mnmath$class == '매'])
+boxplot(mnmath$math ~ mnmath$cls)
+hist(mnmath$math[mnmath$cls == '죽'])
+hist(mnmath$math[mnmath$cls == '매'])
 par(orgpar)
 
 #(3) 등분산 검정
-var.test(mnmath$math ~ mnmath$class, data = mnmath)
+var.test(mnmath$math ~ mnmath$cls, data = mnmath)
 
 
 #(4) t-test 수행
 
-t.test(mnmath$math ~ mnmath$class, data = mnmath,
+t.test(mnmath$math ~ mnmath$cls, data = mnmath,
        alternative = c("two.sided"),
        var.equal = T,                 # 등분산검증의 p-value < 0.05 이면 False로!
        conf.level = 0.95)
@@ -53,21 +54,21 @@ abline(v=mu, col="red", lty=5)
 # 1-2
 #(1)
 #(2) 
-describeBy(data$math, data$class, mat = T)
+describeBy(data$math, data$cls, mat = T)
 
 #(3) 그래프로 확인하기
-ggplot(data, aes(x=class, y=math)) +
+ggplot(data, aes(x=cls, y=math)) +
   geom_boxplot(outlier.color = 'blue') +
   ggtitle("각반 수학 성적")
 
 ggplot(data, aes(x=math)) +
   geom_histogram(binwidth = 10, col='white') +
-  facet_grid(. ~ data$class)   # 그룹별로 그려라!
+  facet_grid(. ~ data$cls)   # 그룹별로 그려라!
 
 #(4) 등분산(분산의 동질성) 검정 (p-value > 0.05 면 등분산)
-bartlett.test(data$math ~ data$class, data=data)  # ⇒ p-value = 0.8497 ⇒ 약 85% 동질하다
+bartlett.test(data$math ~ data$cls, data=data)  # ⇒ p-value = 0.8497 ⇒ 약 85% 동질하다
 
-aaa = aov(data$math ~ data$class, data=data)
+aaa = aov(data$math ~ data$cls, data=data)
 summary(aaa)   
 
 TukeyHSD(aaa)
@@ -81,16 +82,16 @@ draw = function(rn, mu, se, col) {
   abline(v=mu, col=col, lty=5)
 }
 
-mu = 62.6; se = 2.097331; rn = sort(rnorm(1000, mu, se))
+mu = 63.59; se = 2.020535; rn = sort(rnorm(1000, mu, se))
 draw(rn, mu, se, 'red')
 par(new = T)
-mu = 59.4; se = 1.975140; rn = sort(rnorm(1000, mu, se))
+mu = 63.08; se = 2.028632; rn = sort(rnorm(1000, mu, se))
 draw(rn, mu, se, 'blue')
 par(new = T)
-mu = 64.2833; se = 1.9523; rn = sort(rnorm(1000, mu, se))
+mu = 63.84; se = 2.114145; rn = sort(rnorm(1000, mu, se))
 draw(rn, mu, se, 'green')
 par(new = T)
-mu = 66.6; se = 1.964653; rn = sort(rnorm(1000, mu, se))
+mu = 63.47; se = 2.144661; rn = sort(rnorm(1000, mu, se))
 draw(rn, mu, se, 'black')
 
 legend('topright',
